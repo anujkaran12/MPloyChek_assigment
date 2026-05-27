@@ -1,0 +1,144 @@
+<main class="shell">
+  <header class="topbar">
+    <div>
+      <span class="eyebrow">Logged in workspace</span>
+      <h1>Records Dashboard</h1>
+    </div>
+    <button class="btn secondary" type="button" (click)="logout()">Logout</button>
+  </header>
+
+  <section class="profile-row" *ngIf="currentUser">
+    <article>
+      <span>Name</span>
+      <strong>{{ currentUser.name }}</strong>
+    </article>
+    <article>
+      <span>User ID</span>
+      <strong>{{ currentUser.userId }}</strong>
+    </article>
+    <article>
+      <span>Role</span>
+      <strong>{{ currentUser.role }}</strong>
+    </article>
+    <article>
+      <span>Department</span>
+      <strong>{{ currentUser.department }}</strong>
+    </article>
+  </section>
+
+  <section class="panel">
+    <div class="panel-heading">
+      <div>
+        <h2>Accessible Records</h2>
+        <p>{{ accessLevel || 'Records will load using the configured API delay.' }}</p>
+      </div>
+      <button class="btn" type="button" (click)="loadRecords()" [disabled]="isLoadingRecords">
+        {{ isLoadingRecords ? 'Loading...' : 'Reload' }}
+      </button>
+    </div>
+
+    <div class="loader-row" *ngIf="isLoadingRecords">
+      <span class="loader"></span>
+    </div>
+    <p class="error" *ngIf="recordError">{{ recordError }}</p>
+
+    <div class="table-wrap" *ngIf="!isLoadingRecords">
+      <table>
+        <thead>
+          <tr>
+            <th>Record ID</th>
+            <th>Title</th>
+            <th>Region</th>
+            <th>Sensitivity</th>
+            <th>Owner</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let record of records">
+            <td>{{ record.id }}</td>
+            <td>{{ record.title }}</td>
+            <td>{{ record.region }}</td>
+            <td>
+              <span class="status-pill" [class.warn]="record.sensitivity === 'Admin'">
+                {{ record.sensitivity }}
+              </span>
+            </td>
+            <td>{{ record.owner }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="panel admin-panel" *ngIf="isAdmin">
+    <div class="panel-heading">
+      <div>
+        <h2>Admin User Management</h2>
+        <p>View and update users who are already part of the MongoDB database.</p>
+      </div>
+      <button class="btn secondary" type="button" (click)="cancelEdit()" *ngIf="editingUserId">Clear Selection</button>
+    </div>
+
+    <form class="user-form" [formGroup]="userForm" (ngSubmit)="saveUser()" *ngIf="editingUserId">
+      <div class="field">
+        <label for="name">Name</label>
+        <input id="name" type="text" formControlName="name">
+      </div>
+      <div class="field">
+        <label for="role">Role</label>
+        <select id="role" formControlName="role">
+          <option value="General User">General User</option>
+          <option value="Admin">Admin</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="department">Department</label>
+        <input id="department" type="text" formControlName="department">
+      </div>
+      <div class="field">
+        <label for="status">Status</label>
+        <select id="status" formControlName="status">
+          <option value="Active">Active</option>
+          <option value="Inactive">Inactive</option>
+        </select>
+      </div>
+      <button class="btn" type="submit" [disabled]="!editingUserId">Update User</button>
+    </form>
+
+    <p class="selection-note" *ngIf="!editingUserId">Select a user from the table to update details.</p>
+
+    <p class="error" *ngIf="userError">{{ userError }}</p>
+    <div class="loader-row" *ngIf="isLoadingUsers">
+      <span class="loader"></span>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>User ID</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Department</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let user of users">
+            <td>{{ user.name }}</td>
+            <td>{{ user.userId }}</td>
+            <td>{{ user.role }}</td>
+            <td>
+              <span class="status-pill" [class.warn]="user.status === 'Inactive'">{{ user.status }}</span>
+            </td>
+            <td>{{ user.department }}</td>
+            <td class="actions">
+              <button class="btn secondary" type="button" (click)="startEdit(user)">Edit</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>

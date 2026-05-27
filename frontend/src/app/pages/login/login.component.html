@@ -1,0 +1,41 @@
+<main class="login-page">
+  <section class="login-card">
+    <div class="brand-block">
+      <span class="eyebrow">MPloyChek</span>
+      <h1>Access Console</h1>
+      <p>Role-aware login for records review and user administration.</p>
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="submitLogin()" class="login-form">
+      <div class="field">
+        <label for="userId">User ID</label>
+        <input id="userId" type="email" formControlName="userId" autocomplete="username">
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <input id="password" type="password" formControlName="password" autocomplete="current-password">
+      </div>
+
+      <div class="field">
+        <label for="role">Role</label>
+        <select id="role" formControlName="role">
+          <option value="Admin">Admin</option>
+          <option value="General User">General User</option>
+        </select>
+      </div>
+
+      <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
+
+      <button class="btn" type="submit" [disabled]="isLoading">
+        {{ isLoading ? 'Signing in...' : 'Login' }}
+      </button>
+
+      <div class="demo-users">
+        <strong>Demo users</strong>
+        <span>Admin: admin&#64;example.com / admin123</span>
+        <span>General: user&#64;example.com / user123</span>
+      </div>
+    </form>
+  </section>
+</main>
